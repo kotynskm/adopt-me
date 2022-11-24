@@ -1,3 +1,8 @@
+import React from "react";
+// import ReactDOM from "react-dom";
+// will import only createRoot instead of ReactDOM since we are only using createRoot
+import { createRoot } from "react-dom/client";
+
 // make pet component
 const Pet = (props) => {
   return React.createElement("div", {}, [
@@ -33,5 +38,5 @@ const App = () => {
 };
 // get the div with the ID root, create the root using this container, render our App
 const container = document.getElementById("root");
-const root = ReactDOM.createRoot(container);
+const root = createRoot(container);
 root.render(React.createElement(App));

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Pet from "./Pet";
 const ANIMALS = ["bird", "dog", "cat", "rabbit", "reptile"];
 
 const SearchParams = () => {
@@ -9,18 +10,28 @@ const SearchParams = () => {
   const [pets, setPets] = useState([]);
   const breeds = [];
 
+  // putting the empty [] after, makes it call it only once after render (otherwise will continue to re-render upon any change, and this is not what we want)
   useEffect(() => {
     requestPets();
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function requestPets() {
     const res = await fetch(
       `http://pets-v2.dev-apis.com/pets?animal=${animal}&location=${location}&breed=${breed}`
     );
+    const json = await res.json();
+
+    setPets(json.pets);
   }
   return (
     <div className="search-params">
-      <form>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          requestPets();
+        }}
+      >
         <label htmlFor="location">
           Location
           <input
@@ -62,6 +73,14 @@ const SearchParams = () => {
         </label>
         <button>Submit</button>
       </form>
+      {pets.map((pet) => (
+        <Pet
+          name={pet.name}
+          animal={pet.animal}
+          breed={pet.breed}
+          key={pet.id}
+        />
+      ))}
     </div>
   );
 };

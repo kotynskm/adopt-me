@@ -27,6 +27,7 @@ const SearchParams = () => {
   return (
     <div className="search-params">
       <form
+        // we want to only call the request to the api upon form submit
         onSubmit={(e) => {
           e.preventDefault();
           requestPets();
@@ -48,6 +49,7 @@ const SearchParams = () => {
             value={animal}
             onChange={(e) => {
               setAnimal(e.target.value);
+              // reset the breed field to blank when the animal type is changed
               setBreed("");
             }}
           >

@@ -8,6 +8,8 @@ const Results = ({ pets }) => {
       ) : (
         pets.map((pet) => (
           <Pet
+            // we could use the ...pet spread operator, but it is not good practice in case things could change in the code
+            // it's better to explicitly define as below
             animal={pet.animal}
             name={pet.name}
             breed={pet.breed}

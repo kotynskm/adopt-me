@@ -1,47 +1,44 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import fetchSearch from "./fetchSearch";
 import Results from "./Results";
 import useBreedList from "./useBreedList";
 const ANIMALS = ["bird", "dog", "cat", "rabbit", "reptile"];
 
 const SearchParams = () => {
   // variable, function called to update state, and default value given for state
-  const [location, setLocation] = useState("");
+  const [requestParams, setRequestParams] = useState({
+    location: "",
+    animal: "",
+    breed: "",
+  });
+
   const [animal, setAnimal] = useState("");
-  const [breed, setBreed] = useState("");
-  const [pets, setPets] = useState([]);
   const [breeds] = useBreedList(animal);
+  const results = useQuery(["search", requestParams], fetchSearch);
+  const pets = results?.data?.pets ?? [];
 
-  // putting the empty [] after, makes it call it only once after render (otherwise will continue to re-render upon any change, and this is not what we want)
-  useEffect(() => {
-    requestPets();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function requestPets() {
-    const res = await fetch(
-      `http://pets-v2.dev-apis.com/pets?animal=${animal}&location=${location}&breed=${breed}`
-    );
-    const json = await res.json();
-
-    setPets(json.pets);
-  }
   return (
     <div className="search-params">
       <form
         // we want to only call the request to the api upon form submit
         onSubmit={(e) => {
           e.preventDefault();
-          requestPets();
+          // get form data
+          const formData = new FormData(e.target);
+          // make req object with the form data
+          const obj = {
+            animal: formData.get("animal") ?? "",
+            breed: formData.get("breed") ?? "",
+            location: formData.get("location") ?? "",
+          };
+          // update requestParams
+          setRequestParams(obj);
         }}
       >
         <label htmlFor="location">
           Location
-          <input
-            onChange={(e) => setLocation(e.target.value)}
-            id="location"
-            value={location}
-            placeholder="Location"
-          ></input>
+          <input name="location" id="location" placeholder="Location"></input>
         </label>
         <label htmlFor="animal">
           Animal
@@ -50,8 +47,6 @@ const SearchParams = () => {
             value={animal}
             onChange={(e) => {
               setAnimal(e.target.value);
-              // reset the breed field to blank when the animal type is changed
-              setBreed("");
             }}
           >
             <option />
@@ -61,12 +56,7 @@ const SearchParams = () => {
           </select>
           <label htmlFor="breed">
             Breed
-            <select
-              id="breed"
-              disabled={breeds.length === 0}
-              value={breed}
-              onChange={(e) => setBreed(e.target.value)}
-            >
+            <select id="breed" disabled={breeds.length === 0} name="breed">
               <option />
               {breeds.map((breed) => (
                 <option key={breed}>{breed}</option>

@@ -11,6 +11,7 @@ const Results = ({ pets }) => {
             // we could use the ...pet spread operator, but it is not good practice in case things could change in the code
             // it's better to explicitly define as below
             animal={pet.animal}
+            id={pet.id}
             name={pet.name}
             breed={pet.breed}
             images={pet.images}
